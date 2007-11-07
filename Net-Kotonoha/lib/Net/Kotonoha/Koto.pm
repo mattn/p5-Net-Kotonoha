@@ -80,6 +80,17 @@ sub noman {
     return shift->_get_list('//dl[@id="commentsno"]//ul[@class="commentbox"]', 2);
 }
 
+sub title {
+    my $self = shift;
+    my $tree = HTML::TreeBuilder::XPath->new;
+    $tree->parse( $self->_get_content );
+    $tree->eof;
+    my $t = $tree->findnodes('//title');
+    $t = $t ? $t->shift->as_text : undef;
+    $tree->delete;
+    $t;
+}
+
 sub answer {
     my $self = shift;
     if (@_) {
