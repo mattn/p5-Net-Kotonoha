@@ -1,12 +1,12 @@
 package Net::Kotonoha::Koto;
 
 use strict;
-
 use warnings;
+use utf8;
+use Carp;
 use URI;
 use HTML::Selector::XPath qw/selector_to_xpath/;
 use HTML::TreeBuilder::XPath;
-use Encode;
 
 sub new {
     my $class = shift;
@@ -18,13 +18,11 @@ sub new {
 sub _get_content {
     my $self = shift;
     my $koto_no = $self->{koto_no};
-	my $limit = $self->{kotonoha}->{limit};
+    my $limit = $self->{kotonoha}->{limit};
     return unless defined $self->{kotonoha}->{loggedin};
     unless ($self->{content}) {
         my $res = $self->{kotonoha}->{mech}->get("http://kotonoha.cc/no/$koto_no?limit=$limit");
-        if ($res->is_success) {
-            $self->{content} = $res->content;
-        }
+        $self->{content} = $res->content if $res->is_success;
     }
     return $self->{content};
 }
@@ -55,15 +53,18 @@ sub _get_list {
     foreach my $item ($tree->findnodes('//dl[@id="answeredusers"]//div[@class="userbox"]')) {
         my $user = $item->findnodes(('.//a'))->shift;
         my $comment = $item->findnodes(('.//p'))->shift->as_text;
-        my $link = $user->attr('href');
-        if ($link =~ /^\/user\/(\w+)/) {
-            my $userid = $1;
-            if (!grep($_->{user} eq $userid, @list)) {
-                push @list, {
-                    user => $userid,
-                    name => $user->attr('title'), 
-                    comment => '',
-                    answer => $comment =~ '\xe2\x97\x8b' ? 1 : 2,
+        my $my_answer = $comment =~ '\xe2\x97\x8b' ? 1 : 2;
+        if ($answer eq $my_answer) {
+            my $link = $user->attr('href');
+            if ($link =~ /^\/user\/(\w+)/) {
+                my $userid = $1;
+                if (!grep($_->{user} eq $userid, @list)) {
+                    push @list, {
+                        user => $userid,
+                        name => $user->attr('title'), 
+                        comment => '',
+                        answer => $my_answer,
+                    }
                 }
             }
         }
@@ -104,72 +105,32 @@ sub answer {
             flag    => $my_answer,
         );
         my $res = $self->{kotonoha}->{mech}->get($uri->as_string);
-        if ($res->is_success && $res->content) {
+        if ($res->is_success) {
             # need to reset
             $self->{content} = '';
 
             if ($my_comment) {
+				utf8::encode($my_comment) if utf8::is_utf8($my_comment);
                 $uri = URI->new('http://kotonoha.cc/');
                 $uri->query_form(
                     mode    => 'ajax',
                     act     => 'post_comment',
                     koto_id => $self->{koto_no},
-                    comment => Encode::encode_utf8($my_comment),
+                    comment => $my_comment,
                 );
                 my $res = $self->{kotonoha}->{mech}->get($uri->as_string);
             }
             return 1;
+        } else {
+            croak "couldn't post answer";
         }
     } else {
         my @found;
         my $myself = $self->{kotonoha}->{user};
         @found = grep $_->{user} eq $myself, $self->yesman;
         @found = grep $_->{user} eq $myself, $self->noman unless @found;
-        return shift @found;
+        @found ? return shift @found : croak "couldn't post answer";
     }
 }
 
 1;
-__END__
-
-=head1 NAME
-
-Net::Kotonoha - A perl interface to kotonoha.cc
-
-=head1 SYNOPSIS
-
-  use Net::Kotonoha;
-  use Data::Dumper;
-
-  my $kotonoha = Net::Kotonoha->new(
-        mail     => 'xxxxx@example.com',
-        password => 'xxxxx',
-    );
-  print Dumper $kotonoha->newer_list;
-  my $koto = $kotonoha->get_koto(120235);
-  $koto->answer(1, 'YES!YES!YES!');
-  print Dumper $koto->answer;
-
-=head1 DESCRIPTION
-
-This module allows easy access to kotonoha. kotonoha is not provide API.
-Thus, this module is helpful for make kotonoha application.
-
-=head1 AUTHOR
-
-Yasuhiro Matsumoto E<lt>mattn.jp@gmail.comE<gt>
-
-=head1 COPYRIGHT
-
-Copyright (c) 2007 Yasuhiro Matsumoto.  All rights reserved.  This program
-is free software; you can redistribute it and/or modify it under the same
-terms as Perl itself.
-
-The full text of the license can be found in the LICENSE file included
-with this module.
-
-=head1 SEE ALSO
-
-L<Net::Kotonoha>
-
-=cut
