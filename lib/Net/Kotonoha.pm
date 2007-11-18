@@ -7,6 +7,7 @@ use Carp;
 use WWW::Mechanize;
 use HTML::Selector::XPath qw/selector_to_xpath/;
 use HTML::TreeBuilder::XPath;
+use HTML::Entities qw/decode_entities/;
 use Net::Kotonoha::Koto;
 
 our $VERSION = '0.01';
@@ -62,10 +63,11 @@ sub login {
 sub _get_list {
     my $self = shift;
     my $xpath = shift;
+    my $page = shift || 'http://kotonoha.cc/home';
 
     $self->login unless defined $self->{loggedin};
 
-    my $res = $self->{mech}->get('http://kotonoha.cc/home');
+    my $res = $self->{mech}->get( $page );
     croak "can't login kotonoha.cc" unless $res->is_success;
     return unless $res->is_success;
 
@@ -90,12 +92,65 @@ sub _get_list {
     return @list;
 }
 
+sub _get_stream {
+    my $self = shift;
+    my $xpath = shift;
+    my $page = shift || 'http://kotonoha.cc/stream';
+
+    $self->login unless defined $self->{loggedin};
+
+    my $res = $self->{mech}->get( $page );
+    croak "can't login kotonoha.cc" unless $res->is_success;
+    return unless $res->is_success;
+
+    my @list;
+
+    my $tree = HTML::TreeBuilder::XPath->new;
+    $tree->parse($res->content);
+    $tree->eof;
+    foreach my $line ($tree->findnodes(selector_to_xpath($xpath))) {
+        my $html = decode_entities($line->as_HTML);
+        if ($html =~ /<a href="\/user\/(\w+)">([^<]+)<\/a>[^<]+<a href="\/no\/(\d+)">([^<]+)<\/a>([^ ]+)( [^ ]+ (.+))?$/) {
+            push @list, {
+                user    => $1,
+                name    => $2,
+                comment => $7 || '',
+                answer  => $5,
+                koto_no => $3,
+                title   => $4,
+            }
+        }
+    }
+    $tree->delete;
+    return @list;
+}
+
 sub newer_list {
     return shift->_get_list('dl#newkoto a');
 }
 
 sub recent_list {
     return shift->_get_list('dl#recentkoto a');
+}
+
+sub hot_list {
+    return shift->_get_list('dl#hot20 a');
+}
+
+sub answered_list {
+    return shift->_get_list('dl#answeredkoto a');
+}
+
+sub posted_list {
+    return shift->_get_list('dl#postedkoto a');
+}
+
+sub stream_list {
+    return shift->_get_stream('dl#stream li');
+}
+
+sub subscribed_list {
+    return shift->_get_stream('dl#subscribelist li', 'http://kotonoha.cc/inbox');
 }
 
 sub get_koto {
