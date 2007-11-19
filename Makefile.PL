@@ -8,4 +8,6 @@ requires 'HTML::Selector::XPath' => 0.02;
 requires 'HTML::TreeBuilder::XPath' => 0.08;
 requires 'utf8' => 1.04;
 
+use_test_base;
+auto_include;
 WriteAll;

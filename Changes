@@ -1,4 +1,12 @@
 Revision history for Perl extension Net::Kotonoha
 
+0.02  Mon Nov 19 18:03:50 2007
+	- added following method
+	    hot_list
+	    answered_list
+	    posted_list
+	    stream_list
+	    subscribed_list
+
 0.01  Wed Nov  7 11:34:06 2007
 	- original version

@@ -12,3 +12,6 @@
 \.svn
 hoge.pl
 \.tdy$
+^inc/
+\.pl$
+^Metadata\.pm$

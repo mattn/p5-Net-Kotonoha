@@ -10,7 +10,7 @@ use HTML::TreeBuilder::XPath;
 use HTML::Entities qw/decode_entities/;
 use Net::Kotonoha::Koto;
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 sub new {
     my $class = shift;
@@ -201,15 +201,18 @@ You have to sign-up your account at nowa if you don't have them.
 
 =head1 METHOD
 
-=head2 newer_list
+You can access koto list with following methods.
 
-You'll get newer koto list.
+  newer_list
+  recent_list
+  answered_list
+  posted_list
+  stream_list
+  subscribed_list
 
-=head2 recent_list
+And, you can get koto object with following method specified id of koto.
 
-You'll get recent update koto list.
-
-=head2 get_koto($koto_no)
+  get_koto($koto_no)
 
 You'll get koto object.
 see L<Net::Kotonoha::Koto>.
