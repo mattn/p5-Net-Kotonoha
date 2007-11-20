@@ -1,5 +1,8 @@
 Revision history for Perl extension Net::Kotonoha
 
+0.04  Thu Nov 20 15:26:33 2007
+	- changed that return array instead of list.
+
 0.03  Thu Nov 20 14:29:23 2007
 	- make pass spell check.
 

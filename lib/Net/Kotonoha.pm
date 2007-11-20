@@ -10,7 +10,7 @@ use HTML::TreeBuilder::XPath;
 use HTML::Entities qw/decode_entities/;
 use Net::Kotonoha::Koto;
 
-our $VERSION = '0.03';
+our $VERSION = '0.04';
 
 sub new {
     my $class = shift;
@@ -89,7 +89,7 @@ sub _get_list {
         }
     }
     $tree->delete;
-    return @list;
+    return \@list;
 }
 
 sub _get_stream {
@@ -122,7 +122,7 @@ sub _get_stream {
         }
     }
     $tree->delete;
-    return @list;
+    return \@list;
 }
 
 sub newer_list {

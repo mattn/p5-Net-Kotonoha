@@ -70,15 +70,15 @@ sub _get_list {
         }
     }
     $tree->delete;
-    return @list;
+    return \@list;
 }
 
 sub yesman {
-    return shift->_get_list('//dl[@id="commentsyes"]//ul[@class="commentbox"]', 1);
+    shift->_get_list('//dl[@id="commentsyes"]//ul[@class="commentbox"]', 1);
 }
 
 sub noman {
-    return shift->_get_list('//dl[@id="commentsno"]//ul[@class="commentbox"]', 2);
+    shift->_get_list('//dl[@id="commentsno"]//ul[@class="commentbox"]', 2);
 }
 
 sub title {
