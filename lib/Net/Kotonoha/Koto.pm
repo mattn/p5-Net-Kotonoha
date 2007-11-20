@@ -127,8 +127,8 @@ sub answer {
     } else {
         my @found;
         my $myself = $self->{kotonoha}->{user};
-        @found = grep $_->{user} eq $myself, $self->yesman;
-        @found = grep $_->{user} eq $myself, $self->noman unless @found;
+        @found = grep $_->{user} eq $myself, @{$self->yesman};
+        @found = grep $_->{user} eq $myself, @{@$self->noman} unless @found;
         @found ? return shift @found : croak "couldn't post answer";
     }
 }
