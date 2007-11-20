@@ -10,7 +10,7 @@ use HTML::TreeBuilder::XPath;
 use HTML::Entities qw/decode_entities/;
 use Net::Kotonoha::Koto;
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 sub new {
     my $class = shift;
@@ -195,7 +195,7 @@ Thus, this module is helpful for make kotonoha application.
 
 Two parameter is required, a hashref of options.
 It requires C<mail> and C<password> in the parameter.
-You have to sign-up your account at nowa if you don't have them.
+You have to sign-up your account at kotonoha if you don't have them.
 
 =back
 

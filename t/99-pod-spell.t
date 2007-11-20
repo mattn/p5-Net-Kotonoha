@@ -91,6 +91,8 @@ JS
 JSON
 JSONP
 KinoSearch
+koto
+kotonoha
 Kotonoha
 Langworth's
 Lilypond

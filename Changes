@@ -1,5 +1,8 @@
 Revision history for Perl extension Net::Kotonoha
 
+0.03  Thu Nov 20 14:29:23 2007
+	- make pass spell check.
+
 0.02  Mon Nov 19 18:03:50 2007
 	- added following method
 	    hot_list
@@ -7,6 +10,7 @@ Revision history for Perl extension Net::Kotonoha
 	    posted_list
 	    stream_list
 	    subscribed_list
+    - include inc/Test/Base.pm to this module.
 
 0.01  Wed Nov  7 11:34:06 2007
 	- original version
