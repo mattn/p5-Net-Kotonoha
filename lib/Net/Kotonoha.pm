@@ -10,7 +10,7 @@ use HTML::TreeBuilder::XPath;
 use HTML::Entities qw/decode_entities/;
 use Net::Kotonoha::Koto;
 
-our $VERSION = '0.04';
+our $VERSION = '0.05';
 
 sub new {
     my $class = shift;
